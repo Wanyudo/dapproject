@@ -37,7 +37,9 @@ public class App extends Application {
     public static void main(String[] args) {
         parseData(trainingData, "trainingData.csv");
         parseData(validationData, "validationData.csv");
-        for (int i = 0; i < VALIDATION_DATA_COUNT; i++) {
+
+        // set neighborList size equal to validation examples count
+        for (int i = 0, iLim = validationData.size(); i < iLim; i++) {
             neighborList.add(null);
         }
         prepareKnnDataParallel();
@@ -84,7 +86,7 @@ public class App extends Application {
         }
     }
 
-    // sequential
+    // sequential (very slow)
     private static void prepareKnnData() {
         double distanceMin = 1000000;
         for (Fingerprint validationFingerprint : validationData) {
@@ -122,7 +124,6 @@ public class App extends Application {
         for (Fingerprint validationFingerprint : validationData) {
             futures.add(executor.submit(addSortNeighborsTask(validationFingerprint)));
         }
-
         // wait until all of the threads are finished
         for (Future<?> future:futures) {
             try {
@@ -134,21 +135,6 @@ public class App extends Application {
             }
         }
     }
-
-    /*private static void prepareKnnDataParallel() {
-        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(validationData.size());
-        List<Callable<Object>> todo = new ArrayList<Callable<Object>>(validationData.size());
-        Collection<Future<?>> futures = new LinkedList<Future<?>>();
-        for (Fingerprint validationFingerprint : validationData) {
-            todo.add(Executors.callable(addSortNeighborsTask(validationFingerprint)));
-        }
-
-        try {
-            List<Future<Object>> answers = executor.invokeAll(todo);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }*/
 
     public static WpsTask addSortNeighborsTask(final Fingerprint validationFingerprint) {
         final WpsTask task = new WpsTask() {
@@ -186,7 +172,6 @@ public class App extends Application {
 
     private static synchronized void addNeighbors(int validationFingerprintId, ArrayList<Integer> neighbors) {
         neighborList.set(validationFingerprintId, neighbors);
-        // TODO: add to position
     }
 
 }
