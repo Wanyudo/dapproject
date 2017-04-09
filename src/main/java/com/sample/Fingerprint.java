@@ -1,6 +1,4 @@
-package sample;
-
-import static sample.GlobalData.WAPS_COUNT;
+package com.sample;
 
 /**
  * Created by Julee on 07.04.2017.

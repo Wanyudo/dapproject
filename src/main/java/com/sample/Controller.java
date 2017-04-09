@@ -1,4 +1,4 @@
-package sample;
+package com.sample;
 
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;

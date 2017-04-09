@@ -1,7 +1,6 @@
-package sample;
+package com.sample;
 
 import javafx.application.Application;
-import javafx.beans.binding.Bindings;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -10,15 +9,24 @@ import javafx.stage.Stage;
 import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.*;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
 
-import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
-import static sample.GlobalData.*;
+import static com.sample.GlobalData.WAPS_COUNT;
+import static com.sample.GlobalData.neighborList;
+import static com.sample.GlobalData.trainingData;
+import static com.sample.GlobalData.validationData;
 
-public class Main extends Application {
+public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -30,8 +38,8 @@ public class Main extends Application {
 
 
     public static void main(String[] args) {
-        parseData(trainingData, "res/trainingData.csv");
-        parseData(validationData, "res/validationData.csv");
+        parseData(trainingData, "trainingData.csv");
+        parseData(validationData, "validationData.csv");
         //prepareKnnData();
         prepareKnnDataParallel();
         launch(args);
@@ -43,7 +51,8 @@ public class Main extends Application {
         String cvsSplitBy = ",";
 
         try {
-            br = new BufferedReader(new FileReader(dataFile));
+            InputStream is = App.class.getClassLoader().getResourceAsStream(dataFile);
+            br = new BufferedReader(new InputStreamReader(is));
 
             line = br.readLine();
 

@@ -1,4 +1,4 @@
-package sample;
+package com.sample;
 
 /**
  * Created by Julee on 07.04.2017.
