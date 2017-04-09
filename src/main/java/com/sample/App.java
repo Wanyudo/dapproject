@@ -21,10 +21,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import static com.sample.GlobalData.WAPS_COUNT;
-import static com.sample.GlobalData.neighborList;
-import static com.sample.GlobalData.trainingData;
-import static com.sample.GlobalData.validationData;
+import static com.sample.GlobalData.*;
 
 public class App extends Application {
 
@@ -40,7 +37,9 @@ public class App extends Application {
     public static void main(String[] args) {
         parseData(trainingData, "trainingData.csv");
         parseData(validationData, "validationData.csv");
-        //prepareKnnData();
+        for (int i = 0; i < VALIDATION_DATA_COUNT; i++) {
+            neighborList.add(null);
+        }
         prepareKnnDataParallel();
         launch(args);
     }
@@ -186,7 +185,7 @@ public class App extends Application {
     }
 
     private static synchronized void addNeighbors(int validationFingerprintId, ArrayList<Integer> neighbors) {
-        neighborList.add(/*validationFingerprintId, */neighbors);
+        neighborList.set(validationFingerprintId, neighbors);
         // TODO: add to position
     }
 

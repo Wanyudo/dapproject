@@ -1,6 +1,7 @@
 package com.sample;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -8,6 +9,7 @@ import java.util.List;
  */
 public class GlobalData {
     public static final int WAPS_COUNT = 520;
+    public static final int VALIDATION_DATA_COUNT = 1111;
 
     // resource data
     public static List<Fingerprint> trainingData = new ArrayList<Fingerprint>();
@@ -21,5 +23,7 @@ public class GlobalData {
     public static List<LocationData> randomForestWekaData = new ArrayList<LocationData>();
 
     // helper data
+    /*public static List<ArrayList<Integer>> neighborList = new ArrayList<ArrayList<Integer>>(VALIDATION_DATA_COUNT);*/
+
     public static List<ArrayList<Integer>> neighborList = new ArrayList<ArrayList<Integer>>();
 }
