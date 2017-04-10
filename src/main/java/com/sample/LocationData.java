@@ -32,11 +32,11 @@ public class LocationData {
         return latitude;
     }
 
-    public double getFloor() {
+    public int getFloor() {
         return floor;
     }
 
-    public double getBuildingId() {
+    public int getBuildingId() {
         return buildingId;
     }
 }

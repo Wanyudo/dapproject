@@ -38,6 +38,8 @@ public class App extends Application {
     public static void main(String[] args) {
         parseData(trainingData, "trainingData.csv");
         parseData(validationData, "validationData.csv");
+        trainingDataCount = trainingData.size();
+        validationDataCount = validationData.size();
 
         // set neighborList size equal to validation examples count
         for (int i = 0, iLim = validationData.size(); i < iLim; i++) {

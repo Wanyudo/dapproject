@@ -18,7 +18,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sample.Controller">
+<GridPane alignment="center" hgap="10" minHeight="600.0" minWidth="600.0" vgap="10" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sample.Controller">
    <columnConstraints>
       <ColumnConstraints />
    </columnConstraints>
@@ -26,21 +26,21 @@
       <RowConstraints />
    </rowConstraints>
    <children>
-      <TabPane prefHeight="550.0" prefWidth="500.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane prefHeight="600.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab text="K-nearest">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <FlowPane layoutX="14.0" layoutY="14.0" prefHeight="521.0" prefWidth="500.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <FlowPane layoutX="14.0" layoutY="14.0" prefHeight="571.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
-                              <VBox prefHeight="521.0" prefWidth="501.0">
+                              <VBox prefHeight="570.0" prefWidth="600.0">
                                  <children>
                                     <HBox>
                                        <children>
-                                          <VBox>
+                                          <VBox prefHeight="445.0" prefWidth="379.0">
                                              <children>
-                                                <LineChart prefHeight="400.0" prefWidth="310.0">
+                                                <LineChart prefHeight="400.0" prefWidth="317.0">
                                                   <xAxis>
                                                     <CategoryAxis side="BOTTOM" />
                                                   </xAxis>
@@ -58,10 +58,9 @@
                                                       <Label text="Algorithm parameters" />
                                                       <HBox prefHeight="20.0" prefWidth="183.0">
                                                          <children>
-                                                            <Label text="K" />
-                                                            <Slider fx:id="kValueSlider" blockIncrement="1.0" majorTickUnit="1.0" minorTickCount="1" />
-                                                            <Label />
-                                                            <Label fx:id="kValueLabel" layoutX="178.0" layoutY="10.0" />
+                                                            <Label minWidth="15.0" text="K" />
+                                                            <Slider fx:id="kValueSlider" blockIncrement="1.0" majorTickUnit="1.0" minWidth="200.0" minorTickCount="1" />
+                                                            <Label fx:id="kValueLabel" layoutX="178.0" layoutY="10.0" minWidth="35.0" />
                                                          </children>
                                                       </HBox>
                                                    </children>

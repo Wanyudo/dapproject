@@ -9,6 +9,8 @@ import java.util.List;
  */
 public class GlobalData {
     public static final int WAPS_COUNT = 520;
+    public static int trainingDataCount = 0;
+    public static int validationDataCount = 0;
 
     // resource data
     public static List<Fingerprint> trainingData = new ArrayList<Fingerprint>();
