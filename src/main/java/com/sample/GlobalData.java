@@ -22,5 +22,5 @@ public class GlobalData {
     public static List<LocationData> randomForestWekaData = new ArrayList<LocationData>();
 
     // helper data
-    public static List<ArrayList<Integer>> neighborList = new ArrayList<ArrayList<Integer>>();
+    public static List<ArrayList<NeighborData>> neighborList = new ArrayList<ArrayList<NeighborData>>();
 }

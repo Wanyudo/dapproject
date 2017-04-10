@@ -22,6 +22,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import static com.sample.GlobalData.*;
+import static com.sample.KnnAlgorithm.sortNeighbors;
 
 public class App extends Application {
 
@@ -88,32 +89,8 @@ public class App extends Application {
 
     // sequential (very slow)
     private static void prepareKnnData() {
-        double distanceMin = 1000000;
         for (Fingerprint validationFingerprint : validationData) {
-            ArrayList<Integer> neighbors = new ArrayList<Integer>();
-            for (Fingerprint trainingFingerprint : trainingData)  {
-                // calculate the Euclidean distance
-                double distance = 0;
-                for (int i = 0; i < WAPS_COUNT; i++) {
-                    distance += Math.pow(validationFingerprint.wapSignalIntensities[i] - trainingFingerprint.wapSignalIntensities[i], 2);
-                }
-                distance = Math.sqrt(distance);
-
-                // place trainingFingerprint id to neighbor list ascending by distance
-                boolean placed = false;
-                for (int i = 0, iLim = neighbors.size(); i < iLim; i++) {
-                    if (distance > distanceMin) continue;
-                    neighbors.add(i, trainingData.indexOf(trainingFingerprint));
-                    distanceMin = distance;
-                    placed = true;
-                    break;
-                }
-                // add the farthest trainingFingerprint to the end of the list
-                if (!placed) {
-                    neighbors.add(trainingData.indexOf(trainingFingerprint));
-                }
-            }
-            neighborList.add(neighbors);
+            sortNeighbors(validationFingerprint);
         }
     }
 
@@ -140,38 +117,10 @@ public class App extends Application {
         final WpsTask task = new WpsTask() {
             @Override
             protected void doTask() {
-                ArrayList<Integer> neighbors = new ArrayList<Integer>();
-                double distanceMin = 1000000;
-                for (Fingerprint trainingFingerprint : trainingData)  {
-                    // calculate the Euclidean distance
-                    double distance = 0;
-                    for (int i = 0; i < WAPS_COUNT; i++) {
-                        distance += Math.pow(validationFingerprint.wapSignalIntensities[i] - trainingFingerprint.wapSignalIntensities[i], 2);
-                    }
-                    distance = Math.sqrt(distance);
-
-                    // place trainingFingerprint id to neighbor list ascending by distance
-                    boolean placed = false;
-                    for (int i = 0, iLim = neighbors.size(); i < iLim; i++) {
-                        if (distance > distanceMin) continue;
-                        neighbors.add(i, trainingData.indexOf(trainingFingerprint));
-                        distanceMin = distance;
-                        placed = true;
-                        break;
-                    }
-                    // add the farthest trainingFingerprint to the end of the list
-                    if (!placed) {
-                        neighbors.add(trainingData.indexOf(trainingFingerprint));
-                    }
-                }
-                addNeighbors(validationData.indexOf(validationFingerprint), neighbors);
+                sortNeighbors(validationFingerprint);
             }
         };
         return task;
-    }
-
-    private static synchronized void addNeighbors(int validationFingerprintId, ArrayList<Integer> neighbors) {
-        neighborList.set(validationFingerprintId, neighbors);
     }
 
 }

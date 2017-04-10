@@ -16,4 +16,27 @@ public class LocationData {
         this.floor = floor;
         this.buildingId = buildingId;
     }
+
+    public LocationData() {
+        this.longitude = 0;
+        this.latitude = 0;
+        this.floor = 0;
+        this.buildingId = 0;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getFloor() {
+        return floor;
+    }
+
+    public double getBuildingId() {
+        return buildingId;
+    }
 }
