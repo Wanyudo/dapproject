@@ -7,11 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import javax.swing.*;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -22,6 +18,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import static com.sample.GlobalData.*;
+import static com.sample.KnnAlgorithm.predictLocationData;
 import static com.sample.KnnAlgorithm.sortNeighbors;
 
 public class App extends Application {
@@ -35,7 +32,7 @@ public class App extends Application {
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
         parseData(trainingData, "trainingData.csv");
         parseData(validationData, "validationData.csv");
         trainingDataCount = trainingData.size();
@@ -46,6 +43,23 @@ public class App extends Application {
             neighborList.add(null);
         }
         prepareKnnDataParallel();
+
+        // print prediction result with k=10
+        PrintWriter pw = new PrintWriter(new File("test.csv"));
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0, iLim = validationData.size(); i < iLim; i++) {
+            LocationData data = predictLocationData(i, 10);
+            sb.append(data.getLongitude());
+            sb.append(',');
+            sb.append(data.getLatitude());
+            sb.append(',');
+            sb.append(data.getFloor());
+            sb.append(',');
+            sb.append(data.getBuildingId());
+            sb.append('\n');
+        }
+        pw.write(sb.toString());
+        pw.close();
         launch(args);
     }
 
@@ -64,13 +78,13 @@ public class App extends Application {
                 String[] example = line.split(cvsSplitBy); // use comma as separator
 
                 int [] wapSignalIntensities = new int [WAPS_COUNT];
-                for (int i = 0, iLim = WAPS_COUNT; i < iLim; i++) {
+                for (int i = 0; i < WAPS_COUNT; i++) {
                     wapSignalIntensities[i] = Integer.parseInt(example[i]);
                 }
-                double longitude = Double.parseDouble(example[WAPS_COUNT + 1]);
-                double latitude = Double.parseDouble(example[WAPS_COUNT + 2]);
-                int floor = Integer.parseInt(example[WAPS_COUNT + 3]);
-                int buildingId = Integer.parseInt(example[WAPS_COUNT + 4]);
+                double longitude = Double.parseDouble(example[WAPS_COUNT]);
+                double latitude = Double.parseDouble(example[WAPS_COUNT + 1]);
+                int floor = Integer.parseInt(example[WAPS_COUNT + 2]);
+                int buildingId = Integer.parseInt(example[WAPS_COUNT + 3]);
 
                 data.add(new Fingerprint(wapSignalIntensities, longitude, latitude, floor, buildingId));
             }
