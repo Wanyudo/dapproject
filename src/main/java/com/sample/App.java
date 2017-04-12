@@ -14,9 +14,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import static com.sample.CsvFileWriter.COMMA_DELIMITER;
+import static com.sample.CsvFileWriter.writeCsvFile;
 import static com.sample.GlobalData.*;
 import static com.sample.KnnAlgorithm.sortNeighbors;
-import static com.sample.NaiveBayesAlgorithm.doPrediction;
 import static com.sample.NaiveBayesAlgorithm.prepareNaiveBayesData;
 
 public class App extends Application {
@@ -36,16 +37,28 @@ public class App extends Application {
         trainingDataCount = trainingData.size();
         validationDataCount = validationData.size();
 
-        // set neighborList size equal to validation examples count
-        for (int i = 0, iLim = validationDataCount; i < iLim; i++) {
-            neighborList.add(null);
-        }
-        //prepareKnnDataParallel();
-        prepareNaiveBayesData();
-        doPrediction();
+        parseHeaders();
+        writeCsvFile(TRAINING_DATA_FILE_FLOOR, trainingData, FINGERPRINT_HEADER_FLOOR);
+        writeCsvFile(VAILDATION_DATA_FILE_FLOOR, validationData, FINGERPRINT_HEADER_FLOOR);
+        WekaAlgorithm.prepareData(TRAINING_DATA_FILE_FLOOR, VAILDATION_DATA_FILE_FLOOR);
 
-        /*trainClassifier(TRAINING_DATA_FILE, VAILDATION_DATA_FILE);
-        doPrediction();*/
+//        prepareKnnDataParallel();
+//        KnnAlgorithm.doPrediction(1, true);
+
+//        prepareNaiveBayesData();
+//        NaiveBayesAlgorithm.doPrediction();
+
+        // use naive Bayes classifier from Weka
+//        WekaAlgorithmNaiveBayes.trainClassifier();
+//        WekaAlgorithmNaiveBayes.doPrediction();
+
+        // use random forest classifier
+//        WekaAlgorithmRandomForest.trainClassifier();
+//        WekaAlgorithmRandomForest.doPrediction();
+
+        // use j48 classifier
+        WekaAlgorithmJ48.trainClassifier();
+        WekaAlgorithmJ48.doPrediction();
 
         launch(args);
     }
@@ -90,8 +103,45 @@ public class App extends Application {
         }
     }
 
+    private static void parseHeaders() {
+        BufferedReader br = null;
+        String line = "";
+        String cvsSplitBy = ",";
+
+        try {
+            InputStream is = App.class.getClassLoader().getResourceAsStream(VAILDATION_DATA_FILE);
+            br = new BufferedReader(new InputStreamReader(is));
+
+            line = br.readLine();
+            String[] header = line.split(cvsSplitBy);
+            for (int i = 0; i < WAPS_COUNT; i++) {
+                FINGERPRINT_HEADER_FLOOR += header[i] + COMMA_DELIMITER;
+                FINGERPRINT_HEADER_BUILDING_ID += header[i] + COMMA_DELIMITER;
+            }
+            FINGERPRINT_HEADER_FLOOR += header[WAPS_COUNT];
+            FINGERPRINT_HEADER_BUILDING_ID += header[WAPS_COUNT + 1];
+
+        } catch (FileNotFoundException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Info: FileNotFoundException", JOptionPane.ERROR_MESSAGE);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Info: IOException", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(null, e.getMessage(), "Info: IOException", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
+    }
+
     // sequential (very slow)
     private static void prepareKnnData() {
+        for (int i = 0, iLim = validationDataCount; i < iLim; i++) {
+            neighborList.add(null);
+        }
+
         for (Fingerprint validationFingerprint : validationData) {
             sortNeighbors(validationFingerprint);
         }
@@ -99,6 +149,10 @@ public class App extends Application {
 
     // parallel
     private static void prepareKnnDataParallel() {
+        for (int i = 0, iLim = validationDataCount; i < iLim; i++) {
+            neighborList.add(null);
+        }
+
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(validationData.size());
         Collection<Future<?>> futures = new LinkedList<Future<?>>();
         for (Fingerprint validationFingerprint : validationData) {

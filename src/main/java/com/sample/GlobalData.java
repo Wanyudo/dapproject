@@ -16,16 +16,19 @@ public class GlobalData {
     public static final String TRAINING_DATA_FILE = "trainingData.csv";
     public static final String VAILDATION_DATA_FILE = "validationData.csv";
 
+    // file names wich contains part of the whole data
+    public static final String TRAINING_DATA_FILE_FLOOR = "trainingDataFloor.csv";
+    public static final String TRAINING_DATA_FILE_BUILDING_ID = "trainingDataBuildingId.csv";
+    public static final String VAILDATION_DATA_FILE_FLOOR = "validationDataFloor.csv";
+    public static final String VAILDATION_DATA_FILE_BUILDING_ID = "validationDataBuildingId.csv";
+
+    // csv file headers
+    public static String FINGERPRINT_HEADER_FLOOR = "";
+    public static String FINGERPRINT_HEADER_BUILDING_ID = "";
+
     // resource data
     public static List<Fingerprint> trainingData = new ArrayList<Fingerprint>();
     public static List<Fingerprint> validationData = new ArrayList<Fingerprint>();
-
-    // prediction result data
-    public static List<LocationData> knnData = new ArrayList<LocationData>();
-    public static List<LocationData> naiveBayesData = new ArrayList<LocationData>();
-    public static List<LocationData> naiveBayesWekaData = new ArrayList<LocationData>();
-    public static List<LocationData> j48WekaData = new ArrayList<LocationData>();
-    public static List<LocationData> randomForestWekaData = new ArrayList<LocationData>();
 
     // helper data
     public static List<ArrayList<NeighborData>> neighborList = new ArrayList<ArrayList<NeighborData>>();

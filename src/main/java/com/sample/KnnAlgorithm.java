@@ -100,9 +100,11 @@ public class KnnAlgorithm {
 
         longitudeAbsError /= correctPredictionsCount;
         latitudeAbsError /= correctPredictionsCount;
-        sb.append("longitude absolute error:" + longitudeAbsError);
+        sb.append("longitude absolute error: " + longitudeAbsError);
         sb.append('\n');
-        sb.append("latitude absolute error:" + latitudeAbsError);
+        sb.append("latitude absolute error: " + latitudeAbsError);
+        sb.append('\n');
+        sb.append("sucess rate: " + Double.toString((double )correctPredictionsCount / validationDataCount * 100) + "%");
         sb.append('\n');
         pw.write(sb.toString());
         pw.close();

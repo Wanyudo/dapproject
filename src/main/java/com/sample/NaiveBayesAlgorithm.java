@@ -17,6 +17,7 @@ import static com.sample.PublicMethods.calculateProbabilities;
 
 public class NaiveBayesAlgorithm {
     private static ArrayList<ClassProbabilityData> inputsProbabilityData; // stores mean & variance for wap grouped by classes
+    public static final String OUTPUT_FILE_FLOOR = "outputNaiveBayes.csv";
 
 
     public static void prepareNaiveBayesData() {
@@ -107,7 +108,7 @@ public class NaiveBayesAlgorithm {
 
     // predicts location data to all validation examples calculates absolute error and prints it to test.csv
     public static void doPrediction() throws FileNotFoundException {
-        PrintWriter pw = new PrintWriter(new File("testNaiveBayes.csv"));
+        PrintWriter pw = new PrintWriter(new File(OUTPUT_FILE_FLOOR));
         StringBuilder sb = new StringBuilder();
 
         int correctPredictionsCount = 0;
@@ -122,7 +123,7 @@ public class NaiveBayesAlgorithm {
             }
         }
 
-        double successRate = correctPredictionsCount / validationDataCount;
+        double successRate = (double) correctPredictionsCount / validationDataCount * 100;
         sb.append("success rate:" + successRate);
         sb.append('\n');
         pw.write(sb.toString());
