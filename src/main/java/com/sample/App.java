@@ -8,18 +8,16 @@ import javafx.stage.Stage;
 
 import javax.swing.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import static com.sample.GlobalData.*;
-import static com.sample.KnnAlgorithm.predictLocationData;
 import static com.sample.KnnAlgorithm.sortNeighbors;
+import static com.sample.NaiveBayesAlgorithm.doPrediction;
+import static com.sample.NaiveBayesAlgorithm.prepareNaiveBayesData;
 
 public class App extends Application {
 
@@ -32,34 +30,23 @@ public class App extends Application {
     }
 
 
-    public static void main(String[] args) throws FileNotFoundException {
-        parseData(trainingData, "trainingData.csv");
-        parseData(validationData, "validationData.csv");
+    public static void main(String[] args) throws Exception {
+        parseData(trainingData, TRAINING_DATA_FILE);
+        parseData(validationData, VAILDATION_DATA_FILE);
         trainingDataCount = trainingData.size();
         validationDataCount = validationData.size();
 
         // set neighborList size equal to validation examples count
-        for (int i = 0, iLim = validationData.size(); i < iLim; i++) {
+        for (int i = 0, iLim = validationDataCount; i < iLim; i++) {
             neighborList.add(null);
         }
-        prepareKnnDataParallel();
+        //prepareKnnDataParallel();
+        prepareNaiveBayesData();
+        doPrediction();
 
-        // print prediction result with k=10
-        PrintWriter pw = new PrintWriter(new File("test.csv"));
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0, iLim = validationData.size(); i < iLim; i++) {
-            LocationData data = predictLocationData(i, 10);
-            sb.append(data.getLongitude());
-            sb.append(',');
-            sb.append(data.getLatitude());
-            sb.append(',');
-            sb.append(data.getFloor());
-            sb.append(',');
-            sb.append(data.getBuildingId());
-            sb.append('\n');
-        }
-        pw.write(sb.toString());
-        pw.close();
+        /*trainClassifier(TRAINING_DATA_FILE, VAILDATION_DATA_FILE);
+        doPrediction();*/
+
         launch(args);
     }
 
@@ -138,5 +125,4 @@ public class App extends Application {
         };
         return task;
     }
-
 }
