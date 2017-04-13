@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import static com.sample.GlobalData.*;
 import static com.sample.PublicMethods.addItemToRepetitions;
@@ -12,9 +16,59 @@ import static com.sample.PublicMethods.addItemToRepetitions;
  * Created by Julee on 10.04.2017.
  */
 public class KnnAlgorithm {
+    public static final String OUTPUT_FILE = "outputKNN.csv";
+
+    public static List<ArrayList<NeighborData>> neighborList = new ArrayList<ArrayList<NeighborData>>();
+
+
+
+    // sequential (very slow)
+    public static void prepareKnnData() {
+        for (int i = 0, iLim = validationDataCount; i < iLim; i++) {
+            neighborList.add(null);
+        }
+
+        for (Fingerprint validationFingerprint : validationData) {
+            sortNeighbors(validationFingerprint);
+        }
+    }
+
+    // parallel
+    public static void prepareKnnDataParallel() {
+        for (int i = 0, iLim = validationDataCount; i < iLim; i++) {
+            neighborList.add(null);
+        }
+
+        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(validationData.size());
+        Collection<Future<?>> futures = new LinkedList<Future<?>>();
+        for (Fingerprint validationFingerprint : validationData) {
+            futures.add(executor.submit(addSortNeighborsTask(validationFingerprint)));
+        }
+        // wait until all of the threads are finished
+        for (Future<?> future:futures) {
+            try {
+                future.get();
+            } catch (InterruptedException e) {
+
+            } catch (ExecutionException e) {
+
+            }
+        }
+    }
+
+    public static WpsTask addSortNeighborsTask(final Fingerprint validationFingerprint) {
+        final WpsTask task = new WpsTask() {
+            @Override
+            protected void doTask() {
+                sortNeighbors(validationFingerprint);
+            }
+        };
+        return task;
+    }
+
     public static void sortNeighbors(final Fingerprint validationFingerprint) {
         ArrayList<NeighborData> neighbors = new ArrayList<NeighborData>();
-        double distanceMin = 1000000;
+        double distanceMin = 100000000;
         for (Fingerprint trainingFingerprint : trainingData)  {
             double distance = calculateEuclideanDistance(validationFingerprint, trainingFingerprint);
             neighbors.add(new NeighborData(trainingData.indexOf(trainingFingerprint), distance));
@@ -54,7 +108,7 @@ public class KnnAlgorithm {
 
     // predicts location data to all validation examples calculates absolute error and prints it to test.csv
     public static void doPrediction(int k, boolean withWeighting) throws FileNotFoundException {
-        PrintWriter pw = new PrintWriter(new File("test.csv"));
+        PrintWriter pw = new PrintWriter(new File(OUTPUT_FILE));
         StringBuilder sb = new StringBuilder();
         double longitudeAbsError = 0, latitudeAbsError = 0;
 
@@ -62,7 +116,7 @@ public class KnnAlgorithm {
 
         if (withWeighting) {
             for (int i = 0; i < validationDataCount; i++) {
-                LocationData data = predictLocationDataWithWeighting(i, k);
+                LocationData data = predictLocationDataWotingWithWeighting(i, k);
                 sb.append(data.getLongitude());
                 sb.append(',');
                 sb.append(data.getLatitude());
@@ -80,7 +134,7 @@ public class KnnAlgorithm {
             }
         } else {
             for (int i = 0, iLim = validationDataCount; i < iLim; i++) {
-                LocationData data = predictLocationData(i, k);
+                LocationData data = predictLocationDataWoting(i, k);
                 sb.append(data.getLongitude());
                 sb.append(',');
                 sb.append(data.getLatitude());
@@ -100,11 +154,12 @@ public class KnnAlgorithm {
 
         longitudeAbsError /= correctPredictionsCount;
         latitudeAbsError /= correctPredictionsCount;
+        double successRate = (double) correctPredictionsCount / validationDataCount * 100;
         sb.append("longitude absolute error: " + longitudeAbsError);
         sb.append('\n');
         sb.append("latitude absolute error: " + latitudeAbsError);
         sb.append('\n');
-        sb.append("sucess rate: " + Double.toString((double )correctPredictionsCount / validationDataCount * 100) + "%");
+        sb.append("sucess rate: " + successRate + "%");
         sb.append('\n');
         pw.write(sb.toString());
         pw.close();
@@ -146,6 +201,70 @@ public class KnnAlgorithm {
             // Classification result calculation
             addItemAndRepetitionCountToRepetitionsWithWeighing(neighbor.locationData.getFloor(), floorValues, weight);
             addItemAndRepetitionCountToRepetitionsWithWeighing(neighbor.locationData.getBuildingId(), buildingIdValues, weight);
+        }
+        longitude /= weightSum;
+        latitude /= weightSum;
+        return new LocationData(longitude, latitude, getMostlyRepeatedItemWithWeighing(floorValues), getMostlyRepeatedItemWithWeighing(buildingIdValues));
+    }
+
+    // when there are more then k nearest neighbors (with the same distance), take them all into account
+    private static LocationData predictLocationDataWoting(int validationFingerprintId, int k) {
+        double longitude = 0;
+        double latitude = 0;
+        HashMap<Integer, Integer> floorValues = new HashMap<Integer, Integer>();
+        HashMap<Integer, Integer> buildingIdValues = new HashMap<Integer, Integer>();
+
+        double neighborDistanceNext = -1;
+        for (int i = 0; i < k; i++) {
+            double neighborDistance = neighborList.get(validationFingerprintId).get(i).getDistance();
+            Fingerprint neighbor = trainingData.get(neighborList.get(validationFingerprintId).get(i).getId());
+
+            // Regression result calculation
+            longitude += neighbor.locationData.getLongitude();
+            latitude += neighbor.locationData.getLatitude();
+            // Classification result calculation
+            addItemToRepetitions(neighbor.locationData.getFloor(), floorValues);
+            addItemToRepetitions(neighbor.locationData.getBuildingId(), buildingIdValues);
+
+            if (i < trainingDataCount - 1) {
+                neighborDistanceNext = neighborList.get(validationFingerprintId).get(i + 1).getDistance();
+                if (neighborDistanceNext == neighborDistance) {
+                    k++;
+                }
+            }
+        }
+        longitude /= k;
+        latitude /= k;
+        return new LocationData(longitude, latitude, getMostlyRepeatedItem(floorValues), getMostlyRepeatedItem(buildingIdValues));
+    }
+
+    // predicts location data using weighting (inverse Euclidean distance)
+    private static LocationData predictLocationDataWotingWithWeighting(int validationFingerprintId, int k) {
+        double longitude = 0;
+        double latitude = 0;
+        HashMap<Integer, Double> floorValues = new HashMap<Integer, Double>();
+        HashMap<Integer, Double> buildingIdValues = new HashMap<Integer, Double>();
+        double weightSum = 0;
+
+        double neighborDistanceNext = -1;
+        for (int i = 0; i < k; i++) {
+            double neighborDistance = neighborList.get(validationFingerprintId).get(i).getDistance();
+            Fingerprint neighbor = trainingData.get(neighborList.get(validationFingerprintId).get(i).getId());
+            double weight = 1 / neighborList.get(validationFingerprintId).get(i).getDistance();
+            weightSum += weight;
+            // Regression result calculation
+            longitude += neighbor.locationData.getLongitude() * weight;
+            latitude += neighbor.locationData.getLatitude() * weight;
+            // Classification result calculation
+            addItemAndRepetitionCountToRepetitionsWithWeighing(neighbor.locationData.getFloor(), floorValues, weight);
+            addItemAndRepetitionCountToRepetitionsWithWeighing(neighbor.locationData.getBuildingId(), buildingIdValues, weight);
+
+            if (i < trainingDataCount - 1) {
+                neighborDistanceNext = neighborList.get(validationFingerprintId).get(i + 1).getDistance();
+                if (neighborDistanceNext == neighborDistance) {
+                    k++;
+                }
+            }
         }
         longitude /= weightSum;
         latitude /= weightSum;

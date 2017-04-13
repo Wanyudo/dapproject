@@ -42,23 +42,25 @@ public class App extends Application {
         writeCsvFile(VAILDATION_DATA_FILE_FLOOR, validationData, FINGERPRINT_HEADER_FLOOR);
         WekaAlgorithm.prepareData(TRAINING_DATA_FILE_FLOOR, VAILDATION_DATA_FILE_FLOOR);
 
-//        prepareKnnDataParallel();
-//        KnnAlgorithm.doPrediction(1, true);
+        // use KNN classifier
+//        KnnAlgorithm.prepareKnnDataParallel();
+//        KnnAlgorithm.doPrediction(10, true);
 
-//        prepareNaiveBayesData();
-//        NaiveBayesAlgorithm.doPrediction();
+        // use Naive Bayes classifier
+        prepareNaiveBayesData();
+        NaiveBayesAlgorithm.doPrediction();
 
-        // use naive Bayes classifier from Weka
+        // use Naive Bayes classifier from Weka
 //        WekaAlgorithmNaiveBayes.trainClassifier();
 //        WekaAlgorithmNaiveBayes.doPrediction();
 
-        // use random forest classifier
+        // use Random Forest classifier from Weka
 //        WekaAlgorithmRandomForest.trainClassifier();
 //        WekaAlgorithmRandomForest.doPrediction();
 
-        // use j48 classifier
-        WekaAlgorithmJ48.trainClassifier();
-        WekaAlgorithmJ48.doPrediction();
+        // use J48 classifier from Weka
+//        WekaAlgorithmJ48.trainClassifier();
+//        WekaAlgorithmJ48.doPrediction();
 
         launch(args);
     }
@@ -118,8 +120,8 @@ public class App extends Application {
                 FINGERPRINT_HEADER_FLOOR += header[i] + COMMA_DELIMITER;
                 FINGERPRINT_HEADER_BUILDING_ID += header[i] + COMMA_DELIMITER;
             }
-            FINGERPRINT_HEADER_FLOOR += header[WAPS_COUNT];
-            FINGERPRINT_HEADER_BUILDING_ID += header[WAPS_COUNT + 1];
+            FINGERPRINT_HEADER_FLOOR += header[WAPS_COUNT + 2];
+            FINGERPRINT_HEADER_BUILDING_ID += header[WAPS_COUNT + 3];
 
         } catch (FileNotFoundException e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Info: FileNotFoundException", JOptionPane.ERROR_MESSAGE);
@@ -134,49 +136,5 @@ public class App extends Application {
                 }
             }
         }
-    }
-
-    // sequential (very slow)
-    private static void prepareKnnData() {
-        for (int i = 0, iLim = validationDataCount; i < iLim; i++) {
-            neighborList.add(null);
-        }
-
-        for (Fingerprint validationFingerprint : validationData) {
-            sortNeighbors(validationFingerprint);
-        }
-    }
-
-    // parallel
-    private static void prepareKnnDataParallel() {
-        for (int i = 0, iLim = validationDataCount; i < iLim; i++) {
-            neighborList.add(null);
-        }
-
-        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(validationData.size());
-        Collection<Future<?>> futures = new LinkedList<Future<?>>();
-        for (Fingerprint validationFingerprint : validationData) {
-            futures.add(executor.submit(addSortNeighborsTask(validationFingerprint)));
-        }
-        // wait until all of the threads are finished
-        for (Future<?> future:futures) {
-            try {
-                future.get();
-            } catch (InterruptedException e) {
-
-            } catch (ExecutionException e) {
-
-            }
-        }
-    }
-
-    public static WpsTask addSortNeighborsTask(final Fingerprint validationFingerprint) {
-        final WpsTask task = new WpsTask() {
-            @Override
-            protected void doTask() {
-                sortNeighbors(validationFingerprint);
-            }
-        };
-        return task;
     }
 }

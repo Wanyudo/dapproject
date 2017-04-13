@@ -7,6 +7,7 @@ import java.util.ArrayList;
  */
 class ClassProbabilityData {
     private int outputValue;
+    private double probability;
     ArrayList<InputProbabilityData> inputsProbabilityData;
 
     static class InputProbabilityData {
@@ -31,13 +32,13 @@ class ClassProbabilityData {
         return outputValue;
     }
 
-    ClassProbabilityData(int value, ArrayList<InputProbabilityData> xParams) {
-        this.outputValue = value;
-        this.inputsProbabilityData = xParams;
+    double getProbability() {
+        return probability;
     }
 
-    ClassProbabilityData(int value) {
+    ClassProbabilityData(int value, double probability) {
         this.outputValue = value;
+        this.probability = probability;
         inputsProbabilityData = new ArrayList<InputProbabilityData>();
     }
 

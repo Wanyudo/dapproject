@@ -21,8 +21,6 @@ public class NaiveBayesAlgorithm {
 
 
     public static void prepareNaiveBayesData() {
-        inputsProbabilityData = new ArrayList<ClassProbabilityData>();
-
         ArrayList<ClassData> classifiedFingerprints = new ArrayList<ClassData>(); // keeps class output value and number of fingerprints from training data
 
         // group fingerprints from trainingData by floor value
@@ -38,12 +36,13 @@ public class NaiveBayesAlgorithm {
         }
 
         // calculate mean and variance
+        inputsProbabilityData = new ArrayList<ClassProbabilityData>();
         for (ClassData classData : classifiedFingerprints) {
             int classId = classifiedFingerprints.indexOf(classData);
-            inputsProbabilityData.add(new ClassProbabilityData(classData.getOutputValue()));
+            int fingerprintCount = classData.getCount();
+            inputsProbabilityData.add(new ClassProbabilityData(classData.getOutputValue(), (double)fingerprintCount / trainingDataCount));
 
             for (int i = 0; i < WAPS_COUNT; i++) {
-                int fingerprintCount = classData.getCount();
                 double mean = 0;
                 HashMap<Integer, Integer> inputValueRepetitions = new HashMap<Integer, Integer>();
                 // calculate mean and group fingerprints by wap signal intensity
@@ -57,12 +56,17 @@ public class NaiveBayesAlgorithm {
 
                 // calculate variance
                 double mX = 0, mX2 = 0;
+                double variance = 0;
                 for (int j = 0, jLim = inputValueProbabilities.size(); j < jLim; j++) {
                     outputProbability xValueProbability = inputValueProbabilities.get(j);
-                    mX +=  xValueProbability.probability * xValueProbability.outputValue;
-                    mX2 +=  xValueProbability.probability * xValueProbability.outputValue * xValueProbability.outputValue;
+//                    mX +=  xValueProbability.probability * xValueProbability.outputValue;
+//                    mX2 +=  xValueProbability.probability * xValueProbability.outputValue * xValueProbability.outputValue;
+                    variance += Math.pow(xValueProbability.outputValue - mean, 2);
                 }
-                double variance = mX2 - mX * mX + 0.00000001/*Double.MIN_VALUE*/;
+
+                variance = variance / fingerprintCount + 0.00000001;
+//                mean = mX;
+//                double variance = mX2 - mX * mX + 0.00000001/*Double.MIN_VALUE*/;
 
                 inputsProbabilityData.get(classId).addInputProbabilityData(new ClassProbabilityData.InputProbabilityData(mean, variance));
             }
@@ -83,7 +87,7 @@ public class NaiveBayesAlgorithm {
         Fingerprint validationFingerprint = validationData.get(validationFingerprintId);
         HashMap<Integer, Double> posteriorNumerators = new HashMap<Integer, Double>();
         for (ClassProbabilityData classProbabilityData : inputsProbabilityData) {
-            double posteriorNumerator = 1;
+            double posteriorNumerator = classProbabilityData.getProbability();
             for (ClassProbabilityData.InputProbabilityData inputProbabilityData : classProbabilityData.inputsProbabilityData) {
                 int wapId = classProbabilityData.inputsProbabilityData.indexOf(inputProbabilityData);
                 int wapSignalIntensity = validationFingerprint.wapSignalIntensities[wapId];
@@ -124,7 +128,7 @@ public class NaiveBayesAlgorithm {
         }
 
         double successRate = (double) correctPredictionsCount / validationDataCount * 100;
-        sb.append("success rate:" + successRate);
+        sb.append("success rate:" + successRate + " %");
         sb.append('\n');
         pw.write(sb.toString());
         pw.close();

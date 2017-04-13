@@ -29,7 +29,4 @@ public class GlobalData {
     // resource data
     public static List<Fingerprint> trainingData = new ArrayList<Fingerprint>();
     public static List<Fingerprint> validationData = new ArrayList<Fingerprint>();
-
-    // helper data
-    public static List<ArrayList<NeighborData>> neighborList = new ArrayList<ArrayList<NeighborData>>();
 }

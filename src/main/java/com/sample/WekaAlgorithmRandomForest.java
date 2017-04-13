@@ -25,12 +25,12 @@ public class WekaAlgorithmRandomForest extends WekaAlgorithm {
         clasifier = new RandomForest();
         clasifier.setMaxDepth(10); // maxDepth
         clasifier.setNumIterations(100); // numTrees
-        clasifier.buildClassifier(trainingInstances);
+        clasifier.buildClassifier(trainingInstancesNominal);
     }
 
     public static void doPrediction() throws Exception {
-        Evaluation evaluation = new Evaluation(trainingInstances);
-        evaluation.crossValidateModel(clasifier, validationInstances, 10, new Debug.Random(1));
+        Evaluation evaluation = new Evaluation(trainingInstancesNominal);
+        evaluation.evaluateModel(clasifier, validationInstancesNominal);
 
         System.out.println(evaluation.toSummaryString("\nResults\n======\n", true));
 

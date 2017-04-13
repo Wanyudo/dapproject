@@ -23,7 +23,8 @@ public class WekaAlgorithmJ48 extends WekaAlgorithm{
 
     public static void trainClassifier() throws Exception {
         clasifier = new J48();
-        clasifier.setUnpruned(true); // using an unpruned J48
+        //clasifier.setUnpruned(true); // using an unpruned J48
+        //clasifier.setMinNumObj(10); // using an unpruned J48
         // meta-classifier
         fc = new FilteredClassifier();
         fc.setClassifier(clasifier);
@@ -60,7 +61,7 @@ public class WekaAlgorithmJ48 extends WekaAlgorithm{
         }
 
         double successRate = (double) correctPredictionsCount / validationDataCount * 100;
-        sb.append("success rate: " + successRate + "%");
+        sb.append("success rate: " + successRate + " %");
         sb.append('\n');
         pw.write(sb.toString());
         pw.close();

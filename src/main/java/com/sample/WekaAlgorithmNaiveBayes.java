@@ -28,7 +28,7 @@ public class WekaAlgorithmNaiveBayes {
     }
 
     public static void doPrediction() throws Exception {
-        Evaluation evaluation = new Evaluation(trainingInstances);
+        Evaluation evaluation = new Evaluation(trainingInstancesNominal);
         evaluation.evaluateModel(clasifier, validationInstancesNominal);
 
         System.out.println(evaluation.toSummaryString("\nResults\n======\n", true));
@@ -55,7 +55,7 @@ public class WekaAlgorithmNaiveBayes {
         }
 
         double successRate = (double) correctPredictionsCount / validationDataCount * 100;
-        sb.append("success rate: " + successRate + "%");
+        sb.append("success rate: " + successRate + " %");
         sb.append('\n');
         pw.write(sb.toString());
         pw.close();
