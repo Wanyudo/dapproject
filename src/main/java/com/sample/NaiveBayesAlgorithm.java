@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.sample.GlobalData.*;
-import static com.sample.PublicMethods.addItemToRepetitions;
+import static com.sample.PublicMethods.addIntegerToRepetitions;
 import static com.sample.PublicMethods.calculateProbabilities;
 
 /**
@@ -36,6 +36,9 @@ public class NaiveBayesAlgorithm {
         }
 
         // calculate mean and variance
+
+        // http://machinelearningmastery.com/naive-bayes-classifier-scratch-python/
+
         inputsProbabilityData = new ArrayList<ClassProbabilityData>();
         for (ClassData classData : classifiedFingerprints) {
             int classId = classifiedFingerprints.indexOf(classData);
@@ -44,29 +47,22 @@ public class NaiveBayesAlgorithm {
 
             for (int i = 0; i < WAPS_COUNT; i++) {
                 double mean = 0;
-                HashMap<Integer, Integer> inputValueRepetitions = new HashMap<Integer, Integer>();
-                // calculate mean and group fingerprints by wap signal intensity
-                for (int j = 0; j < fingerprintCount; j++) {
-                    int wapSignalIntensity = trainingData.get(classData.getFingerprintId(j)).wapSignalIntensities[i];
+                HashMap<Integer, Integer> inputValueRepetitions = new HashMap<>();
+                for (int fingerprintId : classData.indices) {
+                    int wapSignalIntensity = trainingData.get(fingerprintId).wapSignalIntensities[i];
                     mean += wapSignalIntensity;
-                    addItemToRepetitions(wapSignalIntensity, inputValueRepetitions);
+                    //addIntegerToRepetitions(wapSignalIntensity, inputValueRepetitions);
                 }
                 mean /= fingerprintCount;
-                ArrayList<outputProbability> inputValueProbabilities = (calculateProbabilities(inputValueRepetitions, fingerprintCount));
+                //ArrayList<OutputProbability> inputValueProbabilities = (calculateProbabilities(inputValueRepetitions, fingerprintCount));
 
                 // calculate variance
-                double mX = 0, mX2 = 0;
                 double variance = 0;
-                for (int j = 0, jLim = inputValueProbabilities.size(); j < jLim; j++) {
-                    outputProbability xValueProbability = inputValueProbabilities.get(j);
-//                    mX +=  xValueProbability.probability * xValueProbability.outputValue;
-//                    mX2 +=  xValueProbability.probability * xValueProbability.outputValue * xValueProbability.outputValue;
-                    variance += Math.pow(xValueProbability.outputValue - mean, 2);
+                for (int fingerprintId : classData.indices) {
+                    int wapSignalIntensity = trainingData.get(fingerprintId).wapSignalIntensities[i];
+                    variance += Math.pow(wapSignalIntensity - mean, 2);
                 }
-
-                variance = variance / fingerprintCount + 0.00000001;
-//                mean = mX;
-//                double variance = mX2 - mX * mX + 0.00000001/*Double.MIN_VALUE*/;
+                variance = variance / (fingerprintCount - 1) + 0.00000001; // Avoid propigation -infinty when the probability is zero
 
                 inputsProbabilityData.get(classId).addInputProbabilityData(new ClassProbabilityData.InputProbabilityData(mean, variance));
             }
@@ -85,14 +81,18 @@ public class NaiveBayesAlgorithm {
 
     private static int predictFloor(int validationFingerprintId) {
         Fingerprint validationFingerprint = validationData.get(validationFingerprintId);
-        HashMap<Integer, Double> posteriorNumerators = new HashMap<Integer, Double>();
+        HashMap<Integer, Double> posteriorNumerators = new HashMap<>();
         for (ClassProbabilityData classProbabilityData : inputsProbabilityData) {
             double posteriorNumerator = classProbabilityData.getProbability();
             for (ClassProbabilityData.InputProbabilityData inputProbabilityData : classProbabilityData.inputsProbabilityData) {
                 int wapId = classProbabilityData.inputsProbabilityData.indexOf(inputProbabilityData);
                 int wapSignalIntensity = validationFingerprint.wapSignalIntensities[wapId];
-                double multiplier = 1 / Math.sqrt(2 * Math.PI * Math.pow(inputProbabilityData.getVariance(), 2));
-                double posteriorNumeratorPerInput = multiplier * Math.exp(-Math.pow(wapSignalIntensity - inputProbabilityData.getMean(), 2) / (2 * Math.pow(inputProbabilityData.getVariance(), 2)));
+                if (inputProbabilityData.getVariance() == 0) {
+                    continue;
+                }
+                double multiplier = 1 / (Math.sqrt(2 * Math.PI * Math.pow(inputProbabilityData.getVariance(), 2)) + 0.000001);
+                double exponent = Math.exp(-Math.pow(wapSignalIntensity - inputProbabilityData.getMean(), 2) / (2 * Math.pow(inputProbabilityData.getVariance(), 2) + 0.000001));
+                double posteriorNumeratorPerInput = multiplier * exponent;
                 posteriorNumerator *= posteriorNumeratorPerInput;
             }
             posteriorNumerators.put(classProbabilityData.getOutputValue(), posteriorNumerator);

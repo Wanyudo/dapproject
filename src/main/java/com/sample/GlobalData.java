@@ -12,6 +12,7 @@ public class GlobalData {
     public static final int WAPS_COUNT = 520;
     public static int trainingDataCount = 0;
     public static int validationDataCount = 0;
+    public static int classCount = 2;
 
     public static final String TRAINING_DATA_FILE = "trainingData.csv";
     public static final String VAILDATION_DATA_FILE = "validationData.csv";
@@ -21,6 +22,7 @@ public class GlobalData {
     public static final String TRAINING_DATA_FILE_BUILDING_ID = "trainingDataBuildingId.csv";
     public static final String VAILDATION_DATA_FILE_FLOOR = "validationDataFloor.csv";
     public static final String VAILDATION_DATA_FILE_BUILDING_ID = "validationDataBuildingId.csv";
+    public static final String HEADER_DATA_FILE_FLOOR = "headerFloor.csv";
 
     // csv file headers
     public static String FINGERPRINT_HEADER_FLOOR = "";

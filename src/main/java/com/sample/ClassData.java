@@ -7,7 +7,7 @@ import java.util.ArrayList;
  */
 public class ClassData {
     private int outputValue;
-    private ArrayList<Integer> indices;
+    ArrayList<Integer> indices;
 
     public int getOutputValue() {
         return outputValue;
@@ -21,10 +21,10 @@ public class ClassData {
         indices.add(fingerprintId);
     }
 
-    ClassData(int value, int fingerprintId) {
+    ClassData(int value, int index) {
         this.outputValue = value;
         indices = new ArrayList<Integer>();
-        indices.add(fingerprintId);
+        indices.add(index);
     }
 
     public int getCount() {

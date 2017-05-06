@@ -6,6 +6,7 @@ import java.util.ArrayList;
  * Created by Julee on 12.04.2017.
  */
 class ClassProbabilityData {
+    /** Floor or Building ID */
     private int outputValue;
     private double probability;
     ArrayList<InputProbabilityData> inputsProbabilityData;
@@ -39,7 +40,7 @@ class ClassProbabilityData {
     ClassProbabilityData(int value, double probability) {
         this.outputValue = value;
         this.probability = probability;
-        inputsProbabilityData = new ArrayList<InputProbabilityData>();
+        inputsProbabilityData = new ArrayList<>();
     }
 
     void addInputProbabilityData(InputProbabilityData inputProbabilityData) {

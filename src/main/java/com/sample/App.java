@@ -9,16 +9,10 @@ import javafx.stage.Stage;
 import javax.swing.*;
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadPoolExecutor;
 
 import static com.sample.CsvFileWriter.COMMA_DELIMITER;
-import static com.sample.CsvFileWriter.writeCsvFile;
+import static com.sample.CsvFileWriter.writeCsvFileClassAndAttributes;
 import static com.sample.GlobalData.*;
-import static com.sample.KnnAlgorithm.sortNeighbors;
-import static com.sample.NaiveBayesAlgorithm.prepareNaiveBayesData;
 
 public class App extends Application {
 
@@ -37,18 +31,29 @@ public class App extends Application {
         trainingDataCount = trainingData.size();
         validationDataCount = validationData.size();
 
-        parseHeaders();
-        writeCsvFile(TRAINING_DATA_FILE_FLOOR, trainingData, FINGERPRINT_HEADER_FLOOR);
-        writeCsvFile(VAILDATION_DATA_FILE_FLOOR, validationData, FINGERPRINT_HEADER_FLOOR);
-        WekaAlgorithm.prepareData(TRAINING_DATA_FILE_FLOOR, VAILDATION_DATA_FILE_FLOOR);
-
         // use KNN classifier
-//        KnnAlgorithm.prepareKnnDataParallel();
-//        KnnAlgorithm.doPrediction(10, true);
+        KnnAlgorithm.prepareKnnDataParallel();
+        for (int k = 1; k <= 20; k++) {
+            KnnAlgorithm.doPrediction(k, false);
+        }
 
         // use Naive Bayes classifier
-        prepareNaiveBayesData();
-        NaiveBayesAlgorithm.doPrediction();
+//        prepareNaiveBayesData();
+//        NaiveBayesAlgorithm.doPrediction();
+
+        // Weka algorithms
+
+//        parseHeaders();
+//        writeCsvFileClassAndAttributes(TRAINING_DATA_FILE_FLOOR, trainingData, FINGERPRINT_HEADER_FLOOR, true);
+//        writeCsvFileClassAndAttributes(VAILDATION_DATA_FILE_FLOOR, validationData, FINGERPRINT_HEADER_FLOOR, true);
+//        WekaAlgorithm.prepareFloorData(TRAINING_DATA_FILE_FLOOR, VAILDATION_DATA_FILE_FLOOR);
+//        writeCsvFileClassAndAttributes(TRAINING_DATA_FILE_BUILDING_ID, trainingData, FINGERPRINT_HEADER_FLOOR, false);
+//        writeCsvFileClassAndAttributes(VAILDATION_DATA_FILE_BUILDING_ID, validationData, FINGERPRINT_HEADER_FLOOR, false);
+//        WekaAlgorithm.prepareBuildingIdData(TRAINING_DATA_FILE_BUILDING_ID, VAILDATION_DATA_FILE_BUILDING_ID);
+
+//        WekaAlgorithm.prepareFloorData("humanTrainingData.csv", "humanValidationData.csv");
+//        WekaAlgorithmNaiveBayes.trainClassifier();
+//        WekaAlgorithmNaiveBayes.doPrediction();
 
         // use Naive Bayes classifier from Weka
 //        WekaAlgorithmNaiveBayes.trainClassifier();
@@ -81,7 +86,9 @@ public class App extends Application {
 
                 int [] wapSignalIntensities = new int [WAPS_COUNT];
                 for (int i = 0; i < WAPS_COUNT; i++) {
-                    wapSignalIntensities[i] = Integer.parseInt(example[i]);
+                    int signal = Integer.parseInt(example[i]);
+                    if (signal == 100) signal = -200;
+                    wapSignalIntensities[i] = signal;
                 }
                 double longitude = Double.parseDouble(example[WAPS_COUNT]);
                 double latitude = Double.parseDouble(example[WAPS_COUNT + 1]);
