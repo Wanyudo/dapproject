@@ -25,7 +25,7 @@ class PublicMethods {
         }
     }
 
-    static void addIntegerAndRepetitionCountToRepetitionsWithWeighing(int item, HashMap<Integer, Double> repetitions, double weight) {
+    static void addIntegerToRepetitionsWithWeighing(int item, HashMap<Integer, Double> repetitions, double weight) {
         if (repetitions.containsKey(item)) {
             repetitions.put(item, repetitions.get(item) + weight);
         } else {
@@ -33,7 +33,7 @@ class PublicMethods {
         }
     }
 
-    static void addStringAndRepetitionCountToRepetitionsWithWeighing(String item, HashMap<String, Double> repetitions, double weight) {
+    static void addStringToRepetitionsWithWeighing(String item, HashMap<String, Double> repetitions, double weight) {
         if (repetitions.containsKey(item)) {
             repetitions.put(item, repetitions.get(item) + weight);
         } else {
@@ -77,7 +77,7 @@ class PublicMethods {
         return mostlyRepeatedItem;
     }
 
-    static int getMostlyRepeatedIntegerWithWeighing(HashMap<Integer, Double> repetitions) {
+    static int getMostlyRepeatedIntegerWeighing(HashMap<Integer, Double> repetitions) {
         double maxRepetitionsCount = 0;
         int mostlyRepeatedItem = 0;
         for (Map.Entry<Integer, Double> e : repetitions.entrySet()) {

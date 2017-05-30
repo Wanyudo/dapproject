@@ -7,12 +7,20 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import javax.swing.*;
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.List;
 
 import static com.sample.CsvFileWriter.COMMA_DELIMITER;
 import static com.sample.CsvFileWriter.writeCsvFileClassAndAttributes;
 import static com.sample.GlobalData.*;
+import static com.sample.KnnAlgorithm.KNN_DEFAULT;
+import static com.sample.KnnAlgorithm.KNN_VOTING;
+import static com.sample.KnnAlgorithm.KNN_WEIGHTING;
 
 public class App extends Application {
 
@@ -24,50 +32,89 @@ public class App extends Application {
         primaryStage.show();
     }
 
-
     public static void main(String[] args) throws Exception {
+        parseAlgorithmResultFile();
+
         parseData(trainingData, TRAINING_DATA_FILE);
         parseData(validationData, VAILDATION_DATA_FILE);
         trainingDataCount = trainingData.size();
         validationDataCount = validationData.size();
 
-        // use KNN classifier
-        KnnAlgorithm.prepareKnnDataParallel();
-        for (int k = 1; k <= 20; k++) {
-            KnnAlgorithm.doPrediction(k, false);
+        int cantBeIgnored = 0;
+        for (int i = 0; i < WAPS_COUNT; i++) {
+            int rssi = trainingData.get(0).wapSignalIntensities[i];
+            for (Fingerprint fingerprint : trainingData) {
+                wapUsefulness[i] = false;
+                if (fingerprint.wapSignalIntensities[i] != rssi) {
+                    cantBeIgnored++;
+                    wapUsefulness[i] = true;
+                    break;
+                }
+            }
         }
 
-        // use Naive Bayes classifier
-//        prepareNaiveBayesData();
-//        NaiveBayesAlgorithm.doPrediction();
+        // Prepare data for Weka algorithms
+        File f = new File(TRAINING_DATA_FILE_FLOOR + OUTPUT_FILE_EXTENSION);
+        if (!f.exists() || f.isDirectory()) {
+            f = new File(TRAINING_DATA_FILE_BUILDING_ID + OUTPUT_FILE_EXTENSION);
+            if (!f.exists() || f.isDirectory()) {
+                f = new File(VAILDATION_DATA_FILE_FLOOR + OUTPUT_FILE_EXTENSION);
+                if (!f.exists() || f.isDirectory()) {
+                    f = new File(VAILDATION_DATA_FILE_BUILDING_ID + OUTPUT_FILE_EXTENSION);
+                    if (!f.exists() || f.isDirectory()) {
+                        prepareFiles();
+                    }
+                }
+            }
+        }
+        WekaAlgorithm.prepareFloorData(TRAINING_DATA_FILE_FLOOR, VAILDATION_DATA_FILE_FLOOR);
+        WekaAlgorithm.prepareBuildingIdData(TRAINING_DATA_FILE_BUILDING_ID, VAILDATION_DATA_FILE_BUILDING_ID);
 
-        // Weka algorithms
+        /*// use KNN classifier
+        KnnAlgorithm.prepareKnnDataParallel();
+        for (int k = 1; k <= 20; k++) {
+            KnnAlgorithm.doPrediction(k, KNN_DEFAULT);
+        }
+        for (int k = 1; k <= 20; k++) {
+            KnnAlgorithm.doPrediction(k, KNN_WEIGHTING);
+        }
+        for (int k = 1; k <= 20; k++) {
+            KnnAlgorithm.doPrediction(k, KNN_VOTING);
+        }
 
-//        parseHeaders();
-//        writeCsvFileClassAndAttributes(TRAINING_DATA_FILE_FLOOR, trainingData, FINGERPRINT_HEADER_FLOOR, true);
-//        writeCsvFileClassAndAttributes(VAILDATION_DATA_FILE_FLOOR, validationData, FINGERPRINT_HEADER_FLOOR, true);
-//        WekaAlgorithm.prepareFloorData(TRAINING_DATA_FILE_FLOOR, VAILDATION_DATA_FILE_FLOOR);
-//        writeCsvFileClassAndAttributes(TRAINING_DATA_FILE_BUILDING_ID, trainingData, FINGERPRINT_HEADER_FLOOR, false);
-//        writeCsvFileClassAndAttributes(VAILDATION_DATA_FILE_BUILDING_ID, validationData, FINGERPRINT_HEADER_FLOOR, false);
-//        WekaAlgorithm.prepareBuildingIdData(TRAINING_DATA_FILE_BUILDING_ID, VAILDATION_DATA_FILE_BUILDING_ID);
+        NaiveBayesAlgorithm.prepareNaiveBayesData();
+        NaiveBayesAlgorithm.doPrediction();
 
-//        WekaAlgorithm.prepareFloorData("humanTrainingData.csv", "humanValidationData.csv");
-//        WekaAlgorithmNaiveBayes.trainClassifier();
-//        WekaAlgorithmNaiveBayes.doPrediction();
+        WekaAlgorithmNaiveBayes.trainClassifier();
+        WekaAlgorithmNaiveBayes.doPrediction();
 
-        // use Naive Bayes classifier from Weka
-//        WekaAlgorithmNaiveBayes.trainClassifier();
-//        WekaAlgorithmNaiveBayes.doPrediction();
+        WekaAlgorithmJ48.trainClassifier(false, 2);
+        WekaAlgorithmJ48.doPrediction();
+        WekaAlgorithmJ48.trainClassifier(false, 10);
+        WekaAlgorithmJ48.doPrediction();
+        WekaAlgorithmJ48.trainClassifier(true, 2);
+        WekaAlgorithmJ48.doPrediction();
+        WekaAlgorithmJ48.trainClassifier(true, 10);
+        WekaAlgorithmJ48.doPrediction();
 
-        // use Random Forest classifier from Weka
-//        WekaAlgorithmRandomForest.trainClassifier();
-//        WekaAlgorithmRandomForest.doPrediction();
-
-        // use J48 classifier from Weka
-//        WekaAlgorithmJ48.trainClassifier();
-//        WekaAlgorithmJ48.doPrediction();
+        WekaAlgorithmRandomForest.trainClassifier(0,100);
+        WekaAlgorithmRandomForest.doPrediction();
+        WekaAlgorithmRandomForest.trainClassifier(0,200);
+        WekaAlgorithmRandomForest.doPrediction();
+        WekaAlgorithmRandomForest.trainClassifier(10,100);
+        WekaAlgorithmRandomForest.doPrediction();
+        WekaAlgorithmRandomForest.trainClassifier(10,200);
+        WekaAlgorithmRandomForest.doPrediction();*/
 
         launch(args);
+    }
+
+    private static void prepareFiles() {
+        parseHeaders();
+        writeCsvFileClassAndAttributes(TRAINING_DATA_FILE_FLOOR, trainingData, FINGERPRINT_HEADER_FLOOR, true);
+        writeCsvFileClassAndAttributes(VAILDATION_DATA_FILE_FLOOR, validationData, FINGERPRINT_HEADER_FLOOR, true);
+        writeCsvFileClassAndAttributes(TRAINING_DATA_FILE_BUILDING_ID, trainingData, FINGERPRINT_HEADER_FLOOR, false);
+        writeCsvFileClassAndAttributes(VAILDATION_DATA_FILE_BUILDING_ID, validationData, FINGERPRINT_HEADER_FLOOR, false);
     }
 
     private static void parseData(List<Fingerprint> data, String dataFile) {
@@ -87,7 +134,7 @@ public class App extends Application {
                 int [] wapSignalIntensities = new int [WAPS_COUNT];
                 for (int i = 0; i < WAPS_COUNT; i++) {
                     int signal = Integer.parseInt(example[i]);
-                    if (signal == 100) signal = -200;
+                    if (signal == 100) signal = -104;
                     wapSignalIntensities[i] = signal;
                 }
                 double longitude = Double.parseDouble(example[WAPS_COUNT]);

@@ -1,292 +1,118 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.chart.CategoryAxis?>
-<?import javafx.scene.chart.LineChart?>
-<?import javafx.scene.chart.NumberAxis?>
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
-<?import javafx.scene.control.Slider?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.SpinnerValueFactory$IntegerSpinnerValueFactory?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<GridPane alignment="center" hgap="10" minHeight="600.0" minWidth="600.0" vgap="10" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sample.Controller">
-   <columnConstraints>
-      <ColumnConstraints />
-   </columnConstraints>
-   <rowConstraints>
-      <RowConstraints />
-   </rowConstraints>
-   <children>
-      <TabPane prefHeight="600.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
-        <tabs>
-          <Tab text="K-nearest">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <FlowPane layoutX="14.0" layoutY="14.0" prefHeight="571.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <children>
-                              <VBox prefHeight="570.0" prefWidth="600.0">
-                                 <children>
-                                    <HBox>
-                                       <children>
-                                          <VBox prefHeight="445.0" prefWidth="379.0">
-                                             <children>
-                                                <LineChart prefHeight="400.0" prefWidth="317.0">
-                                                  <xAxis>
-                                                    <CategoryAxis side="BOTTOM" />
-                                                  </xAxis>
-                                                  <yAxis>
-                                                    <NumberAxis side="LEFT" />
-                                                  </yAxis>
-                                                </LineChart>
-                                                <Label prefHeight="40.0" prefWidth="400.0" text="Label" />
-                                             </children>
-                                          </VBox>
-                                          <VBox prefHeight="445.0" prefWidth="183.0">
-                                             <children>
-                                                <VBox prefHeight="36.0" prefWidth="183.0">
-                                                   <children>
-                                                      <Label text="Algorithm parameters" />
-                                                      <HBox prefHeight="20.0" prefWidth="183.0">
-                                                         <children>
-                                                            <Label minWidth="15.0" text="K" />
-                                                            <Slider fx:id="kValueSlider" blockIncrement="1.0" majorTickUnit="1.0" minWidth="200.0" minorTickCount="1" />
-                                                            <Label fx:id="kValueLabel" layoutX="178.0" layoutY="10.0" minWidth="35.0" />
-                                                         </children>
-                                                      </HBox>
-                                                   </children>
-                                                </VBox>
-                                                <Label text="Data to be displayed" />
-                                                <RadioButton mnemonicParsing="false" text="Longitude" />
-                                                <RadioButton mnemonicParsing="false" text="Latitude" />
-                                                <RadioButton mnemonicParsing="false" text="Building ID" />
-                                                <RadioButton mnemonicParsing="false" text="Floor" />
-                                             </children>
-                                          </VBox>
-                                       </children>
-                                    </HBox>
-                                    <Pane prefHeight="80.0" prefWidth="500.0">
-                                       <children>
-                                          <Button layoutX="51.0" layoutY="19.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="400.0" text="Update" />
-                                       </children>
-                                    </Pane>
-                                 </children>
-                              </VBox>
-                           </children>
-                        </FlowPane>
-                     </children></AnchorPane>
-            </content>
-          </Tab>
-          <Tab text="Naive Bayes">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <FlowPane layoutX="14.0" layoutY="14.0" prefHeight="521.0" prefWidth="500.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <children>
-                              <VBox prefHeight="522.0" prefWidth="500.0">
-                                 <children>
-                                    <HBox>
-                                       <children>
-                                          <VBox>
-                                             <children>
-                                                <LineChart prefHeight="400.0" prefWidth="310.0">
-                                                  <xAxis>
-                                                    <CategoryAxis side="BOTTOM" />
-                                                  </xAxis>
-                                                  <yAxis>
-                                                    <NumberAxis side="LEFT" />
-                                                  </yAxis>
-                                                </LineChart>
-                                                <Label prefHeight="40.0" prefWidth="400.0" text="Label" />
-                                             </children>
-                                          </VBox>
-                                          <VBox prefHeight="445.0" prefWidth="187.0">
-                                             <children>
-                                                <Label text="Data to be displayed" />
-                                                <RadioButton mnemonicParsing="false" text="Building ID" />
-                                                <RadioButton mnemonicParsing="false" text="Floor" />
-                                             </children>
-                                          </VBox>
-                                       </children>
-                                    </HBox>
-                                    <Pane prefHeight="80.0" prefWidth="500.0">
-                                       <children>
-                                          <Button layoutX="50.0" layoutY="20.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="400.0" text="Update" />
-                                       </children>
-                                    </Pane>
-                                 </children>
-                              </VBox>
-                           </children>
-                        </FlowPane>
-                     </children></AnchorPane>
-            </content>
-          </Tab>
-            <Tab text="Naive Bayes (Weka)">
-              <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <HBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <children>
-                              <FlowPane prefHeight="521.0" prefWidth="500.0">
-                                 <children>
-                                    <VBox prefHeight="521.0" prefWidth="500.0">
-                                       <children>
-                                          <HBox>
-                                             <children>
-                                                <VBox>
-                                                   <children>
-                                                      <LineChart prefHeight="400.0" prefWidth="310.0">
-                                                        <xAxis>
-                                                          <CategoryAxis side="BOTTOM" />
-                                                        </xAxis>
-                                                        <yAxis>
-                                                          <NumberAxis side="LEFT" />
-                                                        </yAxis>
-                                                      </LineChart>
-                                                      <Label prefHeight="40.0" prefWidth="400.0" text="Label" />
-                                                   </children>
-                                                </VBox>
-                                                <VBox prefHeight="467.0" prefWidth="193.0">
-                                                   <children>
-                                                      <Label text="Data to be displayed" />
-                                                      <RadioButton mnemonicParsing="false" text="Building ID" />
-                                                      <RadioButton mnemonicParsing="false" text="Floor" />
-                                                   </children>
-                                                </VBox>
-                                             </children>
-                                          </HBox>
-                                          <Pane prefHeight="80.0" prefWidth="500.0">
-                                             <children>
-                                                <Button layoutX="50.0" layoutY="14.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="400.0" text="Update" />
-                                             </children>
-                                          </Pane>
-                                       </children>
-                                    </VBox>
-                                 </children>
-                              </FlowPane>
-                           </children>
+<GridPane alignment="center" hgap="10.0" prefHeight="239.0" prefWidth="289.0" vgap="10" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sample.Controller">
+    <columnConstraints>
+        <ColumnConstraints />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints />
+        <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" />
+      <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" />
+    </rowConstraints>
+    <children>
+      <BorderPane prefHeight="219.0" prefWidth="267.0">
+         <center>
+            <Pane fx:id="thisiska" prefHeight="219.0" prefWidth="263.0" BorderPane.alignment="CENTER">
+                <HBox alignment="CENTER" VBox.vgrow="NEVER">
+                    <children>
+                        <VBox fillWidth="false" snapToPixel="false" HBox.hgrow="NEVER">
+                            <opaqueInsets>
+                                <Insets />
+                            </opaqueInsets>
+                            <padding>
+                                <Insets left="10.0" />
+                            </padding>
+                            <children>
+                                <ComboBox fx:id="comboBoxAlgorithms" prefWidth="200.0" promptText="Algorithms..." snapToPixel="false" VBox.vgrow="NEVER">
+                                    <items>
+                                        <FXCollections fx:factory="observableArrayList">
+                                            <String fx:value="KNN" />
+                                            <String fx:value="Naive Bayes" />
+                                            <String fx:value="J48 (Weka)" />
+                                            <String fx:value="Naive Bayes (Weka)" />
+                                            <String fx:value="Random Forest (Weka)" />
+                                        </FXCollections>
+                                    </items>
+                                    <VBox.margin>
+                                        <Insets bottom="10.0" />
+                                    </VBox.margin>
+                                </ComboBox>
+                                <CheckBox fx:id="chkbxJ48" mnemonicParsing="false" text="Unpruned" />
+                                <RadioButton fx:id="rbDefault" mnemonicParsing="false" onMouseClicked="#selectDefaultRb" text="Default">
+                                    <padding>
+                                        <Insets top="10.0" />
+                                    </padding>
+                                </RadioButton>
+                                <RadioButton fx:id="rbDefaultWeigthed" layoutX="20.0" layoutY="45.0" mnemonicParsing="false" onMouseClicked="#selectDefaultWeightedRb" text="Default Weighted">
+                                    <padding>
+                                        <Insets top="10.0" />
+                                    </padding>
+                                </RadioButton>
+                                <RadioButton fx:id="rbVoting" layoutX="20.0" layoutY="89.0" mnemonicParsing="false" onMouseClicked="#selectVotingRb" text="Voting">
+                                    <padding>
+                                        <Insets top="10.0" />
+                                    </padding>
+                                </RadioButton>
+                           <HBox>
+                              <children>
+                                       <Label fx:id="algParam" prefWidth="130.0" text="Parameter" />
+                                       <Spinner fx:id="Spinka" editable="true" prefWidth="100.0" styleClass="split-arrows-horizontal">
+                                           <valueFactory>
+                                               <javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory amountToStepBy="1" />
+                                           </valueFactory>
+                                    <HBox.margin>
+                                       <Insets />
+                                    </HBox.margin>
+                                       </Spinner>
+                              </children>
+                           </HBox>
+                           <HBox>
+                              <children>
+                                      <Label fx:id="algParam2" prefWidth="130.0" text="Parameter" />
+                                      <Spinner fx:id="Spinka2" editable="true" prefWidth="100.0" styleClass="split-arrows-horizontal">
+                                          <valueFactory>
+                                              <javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory amountToStepBy="1" />
+                                          </valueFactory>
+                                    <HBox.margin>
+                                       <Insets />
+                                    </HBox.margin>
+                                      </Spinner>
+                              </children>
+                           </HBox>
+                                <Button fx:id="btnMakePredictions" alignment="CENTER" mnemonicParsing="false" onAction="#makePredictions" prefHeight="30.0" prefWidth="140.0" text="Make predictions">
+                                    <VBox.margin>
+                                        <Insets top="10.0" />
+                                    </VBox.margin>
+                                </Button>
+                            </children>
+                        </VBox>
+                        <HBox>
+                            <HBox.margin>
+                                <Insets top="30.0" />
+                            </HBox.margin>
                         </HBox>
-                     </children></AnchorPane>
-              </content>
-            </Tab>
-            <Tab text="J48 (Weka)">
-              <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <FlowPane layoutY="14.0" prefHeight="521.0" prefWidth="500.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <children>
-                              <VBox prefHeight="522.0" prefWidth="500.0">
-                                 <children>
-                                    <HBox>
-                                       <children>
-                                          <VBox>
-                                             <children>
-                                                <LineChart prefHeight="400.0" prefWidth="310.0">
-                                                  <xAxis>
-                                                    <CategoryAxis side="BOTTOM" />
-                                                  </xAxis>
-                                                  <yAxis>
-                                                    <NumberAxis side="LEFT" />
-                                                  </yAxis>
-                                                </LineChart>
-                                                <Label prefHeight="40.0" prefWidth="400.0" text="Label" />
-                                             </children>
-                                          </VBox>
-                                          <VBox prefHeight="446.0" prefWidth="192.0">
-                                             <children>
-                                                <VBox prefHeight="88.0" prefWidth="183.0">
-                                                   <children>
-                                                      <Label text="Algorithm parameters" />
-                                                      <RadioButton mnemonicParsing="false" text="default" />
-                                                      <RadioButton mnemonicParsing="false" text="minNumObj = 10" />
-                                                      <RadioButton mnemonicParsing="false" text="unpruned = true" />
-                                                      <RadioButton mnemonicParsing="false" text="minNumObj = 10, unpruned = true" />
-                                                   </children>
-                                                </VBox>
-                                                <Label text="Data to be displayed" />
-                                                <RadioButton mnemonicParsing="false" text="Longitude" />
-                                                <RadioButton mnemonicParsing="false" text="Latitude" />
-                                                <RadioButton mnemonicParsing="false" text="Building ID" />
-                                                <RadioButton mnemonicParsing="false" text="Floor" />
-                                             </children></VBox>
-                                       </children>
-                                    </HBox>
-                                    <Pane prefHeight="80.0" prefWidth="500.0">
-                                       <children>
-                                          <Button layoutX="50.0" layoutY="19.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="400.0" text="Update" />
-                                       </children></Pane>
-                                 </children>
-                              </VBox>
-                           </children>
-                        </FlowPane>
-                     </children></AnchorPane>
-              </content>
-            </Tab>
-            <Tab text="Random Forest">
-              <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <FlowPane layoutX="14.0" layoutY="8.0" prefHeight="521.0" prefWidth="500.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <children>
-                              <VBox prefHeight="521.0" prefWidth="500.0">
-                                 <children>
-                                    <HBox>
-                                       <children>
-                                          <VBox>
-                                             <children>
-                                                <LineChart prefHeight="400.0" prefWidth="310.0">
-                                                  <xAxis>
-                                                    <CategoryAxis side="BOTTOM" />
-                                                  </xAxis>
-                                                  <yAxis>
-                                                    <NumberAxis side="LEFT" />
-                                                  </yAxis>
-                                                </LineChart>
-                                                <Label prefHeight="40.0" prefWidth="400.0" text="Label" />
-                                             </children>
-                                          </VBox>
-                                          <VBox prefHeight="99.0" prefWidth="183.0">
-                                             <children>
-                                                <VBox prefHeight="92.0" prefWidth="183.0">
-                                                   <children>
-                                                      <Label text="Algorithm parameters" />
-                                                      <RadioButton mnemonicParsing="false" text="numTrees = 100" />
-                                                      <RadioButton mnemonicParsing="false" text="numTrees = 200" />
-                                                      <RadioButton mnemonicParsing="false" text="numTrees = 100 un maxDepth = 10" />
-                                                      <RadioButton mnemonicParsing="false" text="numTrees = 200 un maxDepth = 10" />
-                                                   </children>
-                                                </VBox>
-                                                <Label text="Data to be displayed" />
-                                                <RadioButton mnemonicParsing="false" text="Longitude" />
-                                                <RadioButton mnemonicParsing="false" text="Latitude" />
-                                                <RadioButton mnemonicParsing="false" text="Building ID" />
-                                                <RadioButton mnemonicParsing="false" text="Floor" />
-                                             </children>
-                                          </VBox>
-                                       </children>
-                                    </HBox>
-                                    <Pane prefHeight="80.0" prefWidth="500.0">
-                                       <children>
-                                          <Button layoutX="50.0" layoutY="20.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="400.0" text="Update" />
-                                       </children>
-                                    </Pane>
-                                 </children>
-                              </VBox>
-                           </children>
-                        </FlowPane>
-                     </children></AnchorPane>
-              </content>
-            </Tab>
-        </tabs>
-      </TabPane>
-   </children>
+                    </children>
+                </HBox>
+            </Pane>
+         </center>
+      </BorderPane>
+    </children>
 </GridPane>

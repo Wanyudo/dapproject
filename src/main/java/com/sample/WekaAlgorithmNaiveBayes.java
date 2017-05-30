@@ -2,23 +2,35 @@ package com.sample;
 
 import weka.classifiers.bayes.NaiveBayes;
 
+import static com.sample.GlobalData.addAlgorithmResult;
+
 /**
  * Created by Julee on 12.04.2017.
  */
 public class WekaAlgorithmNaiveBayes extends WekaAlgorithm {
-    static final String OUTPUT_FILE_FLOOR = "outputNaiveBayesWeka.csv";
-    static final String OUTPUT_FILE_BUILDING_ID = "outputNaiveBayesWekaBuildingId.csv";
+    static final String OUTPUT_FILE = "outputNaiveBayesWeka";
 
-    private static NaiveBayes clasifier;
+    // to predict time algorithm takes for training and prediction
+    private static long start;
+    private static long end;
+
+    private static NaiveBayes classifierFloor, classifierBuildingId;
 
     public static void trainClassifier() throws Exception {
+        start = System.currentTimeMillis();
+
         // train NaiveBayes
-        clasifier = new NaiveBayes();
-        clasifier.buildClassifier(trainingInstancesClassNominalFloor);
+        classifierFloor = new NaiveBayes();
+        classifierBuildingId = new NaiveBayes();
+        classifierFloor.buildClassifier(trainingInstancesClassNominalFloor);
+        classifierBuildingId.buildClassifier(trainingInstancesClassNominalBuildingId);
     }
 
-    void doPrediction() throws Exception {
-        doPrediction(trainingInstancesClassNominalFloor, validationInstancesClassNominalFloor, clasifier, OUTPUT_FILE_FLOOR, 0);
-        doPrediction(trainingInstancesClassNominalBuildingId, validationInstancesClassNominalBuildingId, clasifier, OUTPUT_FILE_FLOOR, 1);
+    static void doPrediction() throws Exception {
+        double successRate = doPrediction(trainingInstancesClassNominalFloor, validationInstancesClassNominalFloor, trainingInstancesClassNominalBuildingId, validationInstancesClassNominalBuildingId,
+                classifierFloor, classifierBuildingId, OUTPUT_FILE);
+
+        end = System.currentTimeMillis();
+        addAlgorithmResult("WekaNaiveBayes", successRate, end - start);
     }
 }

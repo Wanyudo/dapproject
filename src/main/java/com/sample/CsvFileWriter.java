@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 
+import static com.sample.GlobalData.OUTPUT_FILE_EXTENSION;
 import static com.sample.GlobalData.WAPS_COUNT;
 
 /**
@@ -23,7 +24,7 @@ public class CsvFileWriter {
         FileWriter fileWriter = null;
 
         try {
-            fileWriter = new FileWriter(fileName);
+            fileWriter = new FileWriter(fileName + OUTPUT_FILE_EXTENSION);
 
             //Write the CSV file header
             fileWriter.append(header + NEW_LINE_SEPARATOR);
